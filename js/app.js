@@ -368,7 +368,7 @@
         open = (listOpen ? '</ol>' : '') + posLine + '<ol class="sense-list" start="' + (n + 1) + '">';
         listOpen = true;
       }
-      return open + '<li>' + (t.zh ? '<p class="zh">' + esc(t.zh) + '<span class="ai" title="由 AI 根据英文释义翻译，可能有误">AI译</span></p>' : '') +
+      return open + '<li>' + (t.zh ? '<p class="zh">' + esc(t.zh) + '</p>' : '') +
         (t.zh && !settings.showEn ? '' : '<p class="en' + (t.zh ? ' sub' : '') + '" lang="en">' + esc(t.en) + '</p>') +
         (tagsLine ? '<div class="chips">' + tagsLine + '</div>' : '') + extra.join('') + '</li>';
     }).join('');
@@ -589,7 +589,7 @@
           (avatar ? '<button type="button" class="btn ghost sm" data-act="avatar-reset">恢复默认</button>' : '') + '</div>' +
         '<p class="hint">选好的图片会自动裁成正方形，不会上传到任何地方。</p></div>' +
       '<div class="card"><h2>释义</h2>' + sw('showEn', '同时显示英文原文', '有中文释义时，在下面保留英文对照') +
-        '<div class="row"><span><b>中文释义进度</b><small>中文由 AI 根据英文释义翻译，逐步补全；没有中文的词显示英文</small></span></div>' +
+        '<div class="row"><span><b>中文释义进度</b><small>中文释义逐步补全中；没有中文的词显示英文</small></span></div>' +
         '<div class="meter"><i style="inline-size:' + Math.max(pct, pct > 0 ? 1 : 0).toFixed(1) + '%"></i></div>' +
         '<p class="hint">已翻译 ' + (m.zhEntries || 0).toLocaleString() + ' / ' + (m.words || 0).toLocaleString() + ' 个词条（' + pct.toFixed(1) + '%）</p></div>' +
       '<div class="card"><h2>词库</h2><div class="facts wide">' +

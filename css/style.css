@@ -357,7 +357,6 @@ ruby.big rt { font-size: .34em; color: var(--pink-deep); font-weight: 500; lette
 .sense-list .zh { font-size: 1.1rem; font-weight: 600; }
 .sense-list .en { font-size: 1.05rem; line-height: 1.55; }
 .sense-list .en.sub { font-size: .88rem; }
-.ai { font-size: .6rem; font-weight: 500; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; margin-inline-start: 8px; vertical-align: middle; white-space: nowrap; }
 .meta { color: var(--muted); font-size: .84rem; }
 .xref { font-size: 1rem; font-weight: 500; padding-block: 4px; }
 .sense-list + .hint { margin-block-start: 14px; padding: 8px 12px; border-radius: 12px; background: var(--violet-soft); }
