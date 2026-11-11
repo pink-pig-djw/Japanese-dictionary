@@ -14,11 +14,11 @@
   'use strict';
 
   const IMAGES = {
-    idle: 'still',     // resting face, used everywhere by default
-    happy: 'still',    // tapped, word saved
-    think: false,      // searching / dictionary still loading
-    sorry: false,      // nothing found, errors
-    sleep: false,      // empty word book
+    idle: 'animated',     // resting face, used everywhere by default
+    happy: 'animated',    // tapped, word saved
+    think: 'animated',      // searching / dictionary still loading
+    sorry: 'animated',      // nothing found, errors
+    sleep: 'animated',      // empty word book
   };
 
   // The face crop written by tools/mascot.py, as fractions of the full picture: left, top, right, bottom.
