@@ -1,7 +1,47 @@
 # 吉祥物图片提示词
 
-网站里的吉祥物是一个**橙发猫耳少女**。目前显示的是 SVG 占位图，按下面的提示词出图后放进
-`assets/mascot/`，再在 `js/mascot.js` 顶部的 `IMAGES` 里填上文件路径即可替换（没填的表情继续用占位图）。
+网站里的吉祥物是一个**橙发猫耳少女**。
+
+## 当前状态
+
+| 表情 | 用在哪里 | 状态 |
+|---|---|---|
+| `idle` | 首页横幅、顶栏头像（平时） | 已有（暂用开心那张） |
+| `happy` | 点她、收藏成功 | **已有** |
+| `think` | 搜索中、词库加载中 | 缺，暂用 `idle` 顶替 |
+| `sorry` | 没找到结果、出错 | 缺，暂用 `idle` 顶替 |
+| `sleep` | 生词本为空 | 缺，暂用 `idle` 顶替 |
+
+## 已有主图时：用它当参考图改表情（推荐）
+
+把现有的那张图作为参考图（图生图 / 图片编辑）传进去，每次只换下面一句。这样发型、发夹、衣服都不会变。
+
+公共部分：
+
+```text
+Use the reference image as the exact character: same girl, same orange hair and cat ears, same sakura hair clip, same sailor blouse and pink ribbon, same art style, same framing and size, transparent background. Change only her facial expression and pose as described:
+```
+
+| 文件 | 接在后面的描述 |
+|---|---|
+| `idle` | `a calm, gentle closed-mouth smile, relaxed eyes looking at the viewer, ears upright.` |
+| `think` | `curious and thinking: eyes looking up to the upper right, one eyebrow raised, small pursed mouth, index finger on her chin, head tilted, one ear slightly folded.` |
+| `sorry` | `apologetic and troubled: eyebrows slanted upward, teary shimmering eyes, small wavy frown, both hands pressed together in front of her chest, ears drooping down, one sweat drop near her temple.` |
+| `sleep` | `peacefully dozing: eyes gently closed, tiny relaxed smile, head tilted onto one shoulder, ears relaxed sideways, a small sleep bubble near her head (a simple shape, no letters).` |
+
+## 放进网站
+
+每张图跑一次（需要 `pip install pillow`），会自动裁出整图和头像两个版本：
+
+```bash
+python3 tools/mascot.py think.png think
+```
+
+然后把 `js/mascot.js` 顶部 `IMAGES` 里对应的表情改成 `true`。
+
+---
+
+下面是从零开始出图时用的完整提示词。
 
 ## 通用要求
 
@@ -142,19 +182,3 @@ A soft dreamy anime background for a mobile app banner, no characters: pastel sk
 [公共前缀，去掉 "transparent background"]
 Wide banner composition 1200x630: the girl on the right third, smiling and holding an open book, pastel pink-to-peach gradient background with cherry blossom petals and sparkles, large empty area on the left for a title, no text.
 ```
-
-## 放好图片后怎么启用
-
-打开 `js/mascot.js`，把文件路径填进 `IMAGES`：
-
-```js
-const IMAGES = {
-  idle: 'assets/mascot/idle.gif',
-  happy: 'assets/mascot/happy.png',
-  think: 'assets/mascot/think.gif',
-  sorry: 'assets/mascot/sorry.png',
-  sleep: 'assets/mascot/sleep.png',
-};
-```
-
-只有 `idle` 一张图时，其他表情会自动用 `idle` 顶替。

@@ -28,7 +28,7 @@ python3 -m http.server 8765
 
 ## 吉祥物
 
-吉祥物是一位橙发猫耳少女，目前是占位图。出图提示词和替换方法见
+吉祥物是一位橙发猫耳少女。目前只有一个表情，其余表情的出图提示词和替换方法见
 [docs/MASCOT_PROMPTS.md](docs/MASCOT_PROMPTS.md)。
 
 ## 重新生成词库

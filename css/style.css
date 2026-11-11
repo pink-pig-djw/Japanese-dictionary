@@ -221,6 +221,11 @@ main {
 .mascot { display: inline-block; inline-size: 84px; aspect-ratio: 1; flex: none; filter: drop-shadow(0 6px 8px rgb(214 90 20 / .28)); }
 .mascot svg, .mascot img { inline-size: 100%; block-size: 100%; stroke: none; object-fit: contain; }
 .mascot-md { inline-size: 128px; animation: bob 3.600s ease-in-out infinite; }
+.mascot-art { filter: drop-shadow(0 6px 10px rgb(190 70 110 / .28)); }
+.mascot-art img { user-select: none; -webkit-user-drag: none; }
+.mascot-art.mascot-md { inline-size: 176px; }
+/* a bust shot ends in a straight cut: fade it out instead */
+.mascot-art.mascot-md img { -webkit-mask: linear-gradient(#000 78%, transparent 99%); mask: linear-gradient(#000 78%, transparent 99%); }
 @keyframes bob { 50% { transform: translateY(-5px) rotate(-2deg); } }
 
 /* ---------- home hero ---------- */
@@ -245,6 +250,12 @@ main {
 .hero h1 { font-size: 1.850rem; line-height: 1.2; letter-spacing: .04em; text-shadow: 0 2px 0 rgb(214 62 112 / .35); }
 .hero-stat { font-size: .78rem; opacity: .92; }
 .hero .mascot { position: absolute; right: 8px; bottom: -4px; inline-size: 124px; animation: bob 3.600s ease-in-out infinite; }
+/* illustrated bust: larger, standing on the banner's bottom edge */
+.hero .mascot-art { right: -6px; bottom: -14px; inline-size: 176px; transform-origin: 50% 100%; animation: sway 4.500s ease-in-out infinite; }
+@keyframes sway { 50% { transform: rotate(-1.500deg) translateY(-2px); } }
+.hero:has(.mascot-art) .bubble { max-inline-size: calc(100% - 156px); }
+.hero:has(.mascot-art) .bubble::after { bottom: 14px; }
+.hero:has(.mascot-art) .spark:nth-of-type(1) { right: 178px; }
 .bubble {
   position: relative; justify-self: start; margin-block-start: 8px; max-inline-size: calc(100% - 132px);
   display: grid; gap: 1px; padding: 10px 14px; border-radius: 18px 18px 18px 5px;
@@ -484,7 +495,10 @@ ruby.big rt { font-size: .34em; color: var(--pink-deep); font-weight: 500; lette
 .buddy[hidden] { display: none; }
 .buddy #buddyFace { display: block; animation: bob 3.600s ease-in-out infinite; }
 .buddy .mascot { inline-size: 50px; display: block; transition: transform .2s cubic-bezier(.3, 1.6, .6, 1); }
-.buddy .mascot img { border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
+/* illustrated face: a round portrait with her ears poking out over the rim */
+.buddy:has(.mascot-art) { background: linear-gradient(160deg, light-dark(#ffe1ec, #5a3560), light-dark(#ffe9d2, #5a4030)); box-shadow: var(--shadow-sm), inset 0 0 0 2px var(--card-solid); }
+.buddy .mascot-art { inline-size: 58px; margin: -9px -4px 0; filter: none; }
+.buddy .mascot-art img { clip-path: inset(0 0 0 0 round 0 0 27px 27px); }
 .buddy:active .mascot { transform: scale(.9); }
 .buddy.talk .mascot { transform: scale(1.12) rotate(-5deg); }
 /* her speech bubble opens over the search box (inside the bar), not over the page */
@@ -512,7 +526,8 @@ ruby.big rt { font-size: .34em; color: var(--pink-deep); font-weight: 500; lette
   .hero { padding: 28px 28px 26px; min-block-size: 220px; }
   .hero h1 { font-size: 2.300rem; }
   .hero .mascot { inline-size: 170px; right: 28px; }
-  .bubble { max-inline-size: calc(100% - 210px); }
+  .hero .mascot-art { inline-size: 250px; right: 16px; bottom: -22px; }
+  .bubble, .hero:has(.mascot-art) .bubble { max-inline-size: calc(100% - 270px); }
   .tips { grid-template-columns: repeat(5, 1fr); }
   .tip:last-child:nth-child(odd) { grid-column: auto; }
   .kana-table.cols-3 { max-inline-size: 480px; }

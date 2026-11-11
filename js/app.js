@@ -152,7 +152,7 @@
   function setBuddy(mood) {
     if (mood === buddyMood) return;
     buddyMood = mood;
-    $('#buddyFace').innerHTML = Mascot.html(mood);
+    $('#buddyFace').innerHTML = Mascot.html(mood, 'face');
   }
   function buddySay(text, mood, ms) {
     clearTimeout(buddyTimer);

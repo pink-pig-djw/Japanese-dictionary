@@ -1,19 +1,22 @@
 /* The mascot: an orange-haired cat-eared girl.
  *
- * This file draws a simple PLACEHOLDER in SVG.  To use real artwork instead,
- * drop image files (png / webp / gif) into assets/mascot/ and list them in
- * IMAGES below -- any mood left as null keeps the placeholder drawing.
- * Recommended: square, transparent background, at least 512x512.
+ * Each mood can have real artwork: run
+ *     python3 tools/mascot.py picture.png <mood>
+ * which writes assets/mascot/<mood>.webp (whole picture) and <mood>-face.webp
+ * (head only, for the small companion in the top bar), then set the mood to
+ * true in IMAGES below.  Moods without artwork fall back to the idle picture,
+ * and to the simple SVG drawing when there is no artwork at all.
+ * Prompts for generating the pictures: docs/MASCOT_PROMPTS.md
  */
 (function (root) {
   'use strict';
 
   const IMAGES = {
-    idle: null,    // e.g. 'assets/mascot/idle.png'   -- home page greeting
-    happy: null,   // e.g. 'assets/mascot/happy.gif'  -- word saved, empty states with good news
-    think: null,   // searching / loading
-    sorry: null,   // nothing found, errors
-    sleep: null,   // empty word book
+    idle: true,    // resting face, used everywhere by default
+    happy: true,   // tapped, word saved
+    think: false,  // searching / dictionary still loading
+    sorry: false,  // nothing found, errors
+    sleep: false,  // empty word book
   };
 
   const EYES = {
@@ -58,11 +61,14 @@
       '</svg>';
   }
 
-  /** HTML for the mascot in a given mood. */
+  /** HTML for the mascot in a given mood.  size: 'md' (empty states), 'face' (top bar) or none. */
   function html(mood, size) {
     const cls = 'mascot' + (size ? ' mascot-' + size : '');
-    const src = IMAGES[mood] || (mood !== 'idle' && IMAGES.idle) || null;
-    if (src) return '<span class="' + cls + '"><img src="' + src + '" alt="吉祥物" decoding="async"></span>';
+    const name = IMAGES[mood] ? mood : IMAGES.idle ? 'idle' : null;
+    if (name) {
+      return '<span class="' + cls + ' mascot-art"><img src="assets/mascot/' + name + (size === 'face' ? '-face' : '') +
+        '.webp" alt="吉祥物" decoding="async" draggable="false"></span>';
+    }
     return '<span class="' + cls + '">' + svg(mood) + '</span>';
   }
 
