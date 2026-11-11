@@ -173,6 +173,8 @@ def cmd_next(meta, args):
     for rank, chunk, entry in iter_words(meta, args.first, args.to):
         if str(entry["i"]) in load_zh_cached(chunk):
             continue
+        if args.common and "c" not in entry:
+            continue
         senses = []
         for s in entry["s"]:
             item = {}
@@ -268,6 +270,7 @@ def main():
     nx.add_argument("--from", dest="first", type=int, default=0, help="first rank to consider")
     nx.add_argument("--to", type=int, default=None, help="stop before this rank")
     nx.add_argument("--out", help="write the batch to this file instead of printing it")
+    nx.add_argument("--common", action="store_true", help="only words marked common in JMdict")
     mg = sub.add_parser("merge")
     mg.add_argument("files", nargs="+")
     sub.add_parser("check")
