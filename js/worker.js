@@ -320,7 +320,7 @@ const ops = {
   },
   /** A stable "word of the day" picked from the most common words. */
   daily({ seed }) {
-    const pool = Math.min(entries.length, 6000);
+    const pool = Math.min(entries.length, 3600);   // inside the first chunk, so the pick is the same while loading
     for (let n = 0; n < 60 && pool; n++) {
       const e = entries[(seed * 7919 + n * 131) % pool];
       if (e.k && e.c && e.s.length <= 4) return pub(byId.get(e.i));

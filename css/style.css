@@ -249,9 +249,15 @@ main {
 .hero-kicker::before { content: ""; inline-size: 11px; block-size: 11px; background: #fff; -webkit-mask: var(--sparkle) center / contain no-repeat; mask: var(--sparkle) center / contain no-repeat; }
 .hero h1 { font-size: 1.850rem; line-height: 1.2; letter-spacing: .04em; text-shadow: 0 2px 0 rgb(214 62 112 / .35); }
 .hero-stat { font-size: .78rem; opacity: .92; }
-.hero .mascot { position: absolute; right: 8px; bottom: -4px; inline-size: 124px; animation: bob 3.600s ease-in-out infinite; }
+.hero-mascot { position: absolute; right: 8px; bottom: -4px; inline-size: 124px; aspect-ratio: 1; animation: bob 3.600s ease-in-out infinite; }
+.hero-mascot .mascot { inline-size: 100%; display: block; }
+.hero-mascot .face-layer { place-items: end center; }
 /* illustrated bust: larger, standing on the banner's bottom edge */
-.hero .mascot-art { right: -6px; bottom: -14px; inline-size: 176px; transform-origin: 50% 100%; animation: sway 4.500s ease-in-out infinite; }
+.hero-mascot:has(.mascot-art) { right: -6px; bottom: -14px; inline-size: 176px; transform-origin: 50% 100%; animation: sway 4.500s ease-in-out infinite; }
+.hero-mascot.hop .face-layer.in { animation: hop .5s cubic-bezier(.3, 1.5, .6, 1); }
+@keyframes hop { 35% { transform: translateY(-9px) scale(1.03); } }
+.bubble span.swap { animation: lineswap .3s ease-out; }
+@keyframes lineswap { from { opacity: 0; transform: translateY(4px); } }
 @keyframes sway { 50% { transform: rotate(-1.500deg) translateY(-2px); } }
 .hero:has(.mascot-art) .bubble { max-inline-size: calc(100% - 156px); }
 .hero:has(.mascot-art) .bubble::after { bottom: 14px; }
@@ -493,17 +499,26 @@ ruby.big rt { font-size: .34em; color: var(--pink-deep); font-weight: 500; lette
 .search { position: relative; }
 .buddy { flex: none; inline-size: 50px; block-size: 50px; display: grid; place-items: center; border-radius: 50%; }
 .buddy[hidden] { display: none; }
-.buddy #buddyFace { display: block; animation: bob 3.600s ease-in-out infinite; }
-.buddy .mascot { inline-size: 50px; display: block; transition: transform .2s cubic-bezier(.3, 1.6, .6, 1); }
+.buddy #buddyFace { position: relative; display: block; inline-size: 50px; block-size: 50px; animation: bob 3.600s ease-in-out infinite; }
+.buddy .mascot { inline-size: 50px; flex: none; display: block; transition: transform .28s cubic-bezier(.3, 1.6, .6, 1); }
+/* expressions cross-fade: the new face fades and settles in while the old one fades out underneath */
+.face-layer {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  opacity: 0; scale: .9; filter: blur(2px);
+  transition: opacity .32s ease, scale .36s cubic-bezier(.3, 1.4, .6, 1), filter .32s ease;
+  will-change: opacity, scale;
+}
+.face-layer.in { opacity: 1; scale: 1; filter: none; }
+.face-layer.out { opacity: 0; scale: 1.04; filter: none; transition: opacity .36s ease .06s, scale .4s ease; }
 /* illustrated face: a round portrait with her ears poking out over the rim */
 .buddy:has(.mascot-art) { background: linear-gradient(160deg, light-dark(#ffe1ec, #5a3560), light-dark(#ffe9d2, #5a4030)); box-shadow: var(--shadow-sm), inset 0 0 0 2px var(--card-solid); }
-.buddy .mascot-art { inline-size: 58px; margin: -9px -4px 0; filter: none; }
+.buddy .mascot-art { inline-size: 58px; translate: 0 -4px; filter: none; }
 .buddy .mascot-art img { clip-path: inset(0 0 0 0 round 0 0 27px 27px); }
 .buddy:active .mascot { transform: scale(.9); }
 .buddy.talk .mascot { transform: scale(1.12) rotate(-5deg); }
 /* a picture the user chose in 设置 */
 .buddy:has(.mascot-custom) { background: var(--grad); box-shadow: var(--shadow-sm); }
-.buddy:has(.mascot-custom) #buddyFace { animation: none; display: grid; place-items: center; }
+.buddy:has(.mascot-custom) #buddyFace { animation: none; }
 .buddy .mascot-custom { inline-size: 46px; block-size: 46px; filter: none; }
 .buddy .mascot-custom img, .avatar-preview img { border-radius: 50%; object-fit: cover; }
 .avatar-row { justify-content: flex-start; }
@@ -541,8 +556,8 @@ ruby.big rt { font-size: .34em; color: var(--pink-deep); font-weight: 500; lette
   body { font-size: 17px; }
   .hero { padding: 28px 28px 26px; min-block-size: 220px; }
   .hero h1 { font-size: 2.300rem; }
-  .hero .mascot { inline-size: 170px; right: 28px; }
-  .hero .mascot-art { inline-size: 250px; right: 16px; bottom: -22px; }
+  .hero-mascot { inline-size: 170px; right: 28px; }
+  .hero-mascot:has(.mascot-art) { inline-size: 250px; right: 16px; bottom: -22px; }
   .bubble, .hero:has(.mascot-art) .bubble { max-inline-size: calc(100% - 270px); }
   .tips { grid-template-columns: repeat(5, 1fr); }
   .tip:last-child:nth-child(odd) { grid-column: auto; }

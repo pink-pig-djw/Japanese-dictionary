@@ -72,5 +72,13 @@
     return '<span class="' + cls + '">' + svg(mood) + '</span>';
   }
 
-  root.Mascot = { html };
+  /** Fetch every mood's artwork ahead of time so a change of expression never waits on the network. */
+  function preload() {
+    for (const mood of Object.keys(IMAGES)) {
+      if (!IMAGES[mood]) continue;
+      for (const suffix of ['', '-face']) new Image().src = 'assets/mascot/' + mood + suffix + '.webp';
+    }
+  }
+
+  root.Mascot = { html, preload };
 })(this);

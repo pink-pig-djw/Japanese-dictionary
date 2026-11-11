@@ -150,13 +150,36 @@
   let buddyMood = '';
   let buddyTimer = 0;
   let buddyLine = 0;
+  let heroTimer = 0;
   function setBuddy(mood) {
     const key = avatar ? 'custom' : mood;
     if (key === buddyMood) return;
     buddyMood = key;
-    $('#buddyFace').innerHTML = avatar
+    crossfade($('#buddyFace'), avatar
       ? '<span class="mascot mascot-face mascot-custom"><img src="' + esc(avatar) + '" alt="我的头像" draggable="false"></span>'
-      : Mascot.html(mood, 'face');
+      : Mascot.html(mood, 'face'));
+  }
+  /** Swap a mascot picture by fading the new one in over the old one (the old one stays until the new image is decoded). */
+  function crossfade(box, html) {
+    const next = document.createElement('span');
+    next.className = 'face-layer';
+    next.innerHTML = html;
+    const first = !box.firstElementChild;
+    if (first) next.classList.add('in');          // nothing to fade from: just show it
+    box.append(next);
+    const img = $('img', next);
+    const show = () => {
+      if (!next.isConnected) return;
+      for (const old of [...box.children]) {
+        if (old === next) continue;
+        old.classList.remove('in');
+        old.classList.add('out');
+        setTimeout(() => old.remove(), 420);
+      }
+      requestAnimationFrame(() => next.classList.add('in'));
+    };
+    if (first) return;
+    if (img && img.decode) img.decode().then(show, show); else requestAnimationFrame(show);
   }
   function buddySay(text, mood, ms) {
     clearTimeout(buddyTimer);
@@ -249,7 +272,7 @@
         '<span class="hero-kicker">SAKURA JISHO</span><h1>樱花日语词典</h1>' +
         '<p class="hero-stat">' + stat + '</p>' +
         '<div class="bubble"><b lang="ja">' + hello[0] + '！</b><span>' + hello[1] + '</span></div>' +
-        Mascot.html('idle') + '</section>' +
+        '<button type="button" class="hero-mascot" data-act="hero-tap" aria-label="吉祥物，点一下打招呼"></button></section>' +
       (hist ? '<section class="block"><div class="block-head"><h2>最近查过</h2><button type="button" class="link" data-act="clear-hist">清空</button></div><div class="pills">' + hist + '</div></section>' : '') +
       (daily ? '<section class="block"><h2>今日一词</h2>' + wordCard(daily) + '</section>' : '') +
       '<section class="block"><h2>可以这样查</h2><div class="tips">' +
@@ -258,6 +281,8 @@
           .map(([q, t, d]) => '<a class="tip" href="#/q/' + encodeURIComponent(q) + '"><b lang="ja">' + esc(q) + '</b><span>' + t + '</span><small>' + d + '</small></a>').join('') +
       '</div></section>';
   };
+
+  after.home = () => { const box = $('.hero-mascot'); if (box) crossfade(box, Mascot.html('idle')); };
 
   // ----- search -----
   let lastResult = null;
@@ -670,6 +695,15 @@
       try { localStorage.removeItem('jd.avatar'); } catch (e) { /* ignore */ }
       refreshBuddy(); render(true); toast('已恢复默认头像');
     }
+    else if (act === 'hero-tap') {
+      crossfade(t, Mascot.html('happy'));
+      t.classList.remove('hop'); void t.offsetWidth; t.classList.add('hop');
+      const line = $('.bubble span');
+      const lines = ['一起学日语吧喵！', '今天想查什么词？', '点上面的搜索框就能查喵', '加油，我陪着你喵'];
+      if (line) { line.classList.remove('swap'); void line.offsetWidth; line.textContent = lines[buddyLine++ % lines.length]; line.classList.add('swap'); }
+      clearTimeout(heroTimer);
+      heroTimer = setTimeout(() => { if (t.isConnected) crossfade(t, Mascot.html('idle')); }, 1800);
+    }
     else if (act === 'flip') { cardFlipped = !cardFlipped; render(true); }
     else if (act === 'card-next') { cardIdx++; cardFlipped = false; render(true); }
     else if (act === 'card-prev') { cardIdx = Math.max(0, cardIdx - 1); cardFlipped = false; render(true); }
@@ -733,5 +767,6 @@
   }
 
   petals();
+  Mascot.preload();
   go();
 })();
