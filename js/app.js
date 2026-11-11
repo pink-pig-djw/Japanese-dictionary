@@ -20,6 +20,7 @@
   let favs = store.get('fav', []);          // [{i, t}] newest first
   let history_ = store.get('hist', []);     // recent queries, newest first
   const isFav = (id) => favs.some((f) => f.i === id);
+  let avatar = store.get('avatar', null);   // custom top-bar picture (data URL), null = the mascot
 
   // ---------- worker ----------
   const worker = new Worker('js/worker.js');
@@ -150,9 +151,12 @@
   let buddyTimer = 0;
   let buddyLine = 0;
   function setBuddy(mood) {
-    if (mood === buddyMood) return;
-    buddyMood = mood;
-    $('#buddyFace').innerHTML = Mascot.html(mood, 'face');
+    const key = avatar ? 'custom' : mood;
+    if (key === buddyMood) return;
+    buddyMood = key;
+    $('#buddyFace').innerHTML = avatar
+      ? '<span class="mascot mascot-face mascot-custom"><img src="' + esc(avatar) + '" alt="我的头像" draggable="false"></span>'
+      : Mascot.html(mood, 'face');
   }
   function buddySay(text, mood, ms) {
     clearTimeout(buddyTimer);
@@ -165,7 +169,7 @@
   /** Pick the resting mood for the current page and decide whether the companion is shown. */
   function refreshBuddy() {
     buddy.hidden = !settings.buddy;
-    if (buddy.classList.contains('talk')) return;
+    if (buddy.classList.contains('talk') && !avatar === (buddyMood !== 'custom')) return;
     setBuddy(!ready && route.name === 'search' ? 'think' : 'idle');
   }
   buddy.addEventListener('click', () => {
@@ -544,8 +548,17 @@
     const pct = m.words ? ((m.zhEntries || 0) / m.words * 100) : 0;
     return '<section class="block"><h1>设置</h1>' +
       '<div class="card"><h2>外观</h2><div class="seg three">' + opt('light dark', '跟随系统<small>当前' + sys + '</small>') + opt('light', '浅色') + opt('dark', '深色') + '</div>' +
-        sw('petals', '樱花飘落', '背景里的花瓣动画') +
-        sw('buddy', '吉祥物陪伴', '在每个页面顶部的搜索框旁边，点她会说话') + '</div>' +
+        sw('petals', '樱花飘落', '背景里的花瓣动画') + '</div>' +
+      '<div class="card"><h2>顶栏头像</h2>' +
+        sw('buddy', '显示头像', '在每个页面顶部的搜索框旁边，点一下会说话') +
+        '<div class="row avatar-row"><span class="avatar-preview">' +
+          (avatar ? '<img src="' + esc(avatar) + '" alt="当前头像">' : Mascot.html('idle', 'face')) + '</span>' +
+          '<span><b>' + (avatar ? '自定义图片' : '默认：吉祥物') + '</b><small>' +
+            (avatar ? '图片只保存在这台设备的浏览器里' : '会跟着搜索、收藏换表情') + '</small></span></div>' +
+        '<div class="avatar-actions"><label class="btn sm"><input type="file" accept="image/*" data-avatar hidden>' +
+          (avatar ? '换一张' : '选择图片') + '</label>' +
+          (avatar ? '<button type="button" class="btn ghost sm" data-act="avatar-reset">恢复默认</button>' : '') + '</div>' +
+        '<p class="hint">选好的图片会自动裁成正方形，不会上传到任何地方。</p></div>' +
       '<div class="card"><h2>释义</h2>' + sw('showEn', '同时显示英文原文', '有中文释义时，在下面保留英文对照') +
         '<div class="row"><span><b>中文释义进度</b><small>中文由 AI 根据英文释义翻译，逐步补全；没有中文的词显示英文</small></span></div>' +
         '<div class="meter"><i style="inline-size:' + Math.max(pct, pct > 0 ? 1 : 0).toFixed(1) + '%"></i></div>' +
@@ -652,6 +665,11 @@
     }
     const act = t.dataset.act;
     if (act === 'clear-hist') { history_ = []; store.set('hist', history_); render(true); toast('搜索记录已清空'); }
+    else if (act === 'avatar-reset') {
+      avatar = null;
+      try { localStorage.removeItem('jd.avatar'); } catch (e) { /* ignore */ }
+      refreshBuddy(); render(true); toast('已恢复默认头像');
+    }
     else if (act === 'flip') { cardFlipped = !cardFlipped; render(true); }
     else if (act === 'card-next') { cardIdx++; cardFlipped = false; render(true); }
     else if (act === 'card-prev') { cardIdx = Math.max(0, cardIdx - 1); cardFlipped = false; render(true); }
@@ -666,7 +684,35 @@
       URL.revokeObjectURL(a.href);
     }
   });
+  /** Centre-crop a picked image to a small square and keep it as a data URL. */
+  async function pickAvatar(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = new Image();
+      img.src = url;
+      await img.decode();
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 192;
+      canvas.getContext('2d').drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, 192, 192);
+      let data = canvas.toDataURL('image/webp', 0.86);
+      if (!data.startsWith('data:image/webp')) data = canvas.toDataURL('image/png');
+      store.set('avatar', data);
+      if (store.get('avatar', null) !== data) { toast('浏览器存不下这张图，换一张小一点的试试'); return; }
+      avatar = data;
+      refreshBuddy(); render(true); toast('头像换好啦 ✿');
+    } catch (e) {
+      toast('这张图片打不开，换一张试试');
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }
+
   document.addEventListener('change', (ev) => {
+    if (ev.target.matches && ev.target.matches('[data-avatar]')) {
+      if (ev.target.files[0]) pickAvatar(ev.target.files[0]);
+      return;
+    }
     const key = ev.target.dataset && ev.target.dataset.setting;
     if (!key) return;
     settings[key] = ev.target.checked;

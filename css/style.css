@@ -501,6 +501,22 @@ ruby.big rt { font-size: .34em; color: var(--pink-deep); font-weight: 500; lette
 .buddy .mascot-art img { clip-path: inset(0 0 0 0 round 0 0 27px 27px); }
 .buddy:active .mascot { transform: scale(.9); }
 .buddy.talk .mascot { transform: scale(1.12) rotate(-5deg); }
+/* a picture the user chose in 设置 */
+.buddy:has(.mascot-custom) { background: var(--grad); box-shadow: var(--shadow-sm); }
+.buddy:has(.mascot-custom) #buddyFace { animation: none; display: grid; place-items: center; }
+.buddy .mascot-custom { inline-size: 46px; block-size: 46px; filter: none; }
+.buddy .mascot-custom img, .avatar-preview img { border-radius: 50%; object-fit: cover; }
+.avatar-row { justify-content: flex-start; }
+.avatar-preview {
+  flex: none; inline-size: 64px; block-size: 64px; border-radius: 50%; display: grid; place-items: center; overflow: hidden;
+  background: linear-gradient(160deg, var(--pink-soft), var(--peach-soft)); box-shadow: inset 0 0 0 2px var(--card-solid), var(--shadow-sm);
+}
+.avatar-preview img { inline-size: 100%; block-size: 100%; }
+.avatar-preview .mascot { inline-size: 64px; filter: none; }
+.avatar-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 4px 10px; }
+.avatar-actions .btn { min-block-size: 44px; cursor: pointer; }
+.avatar-actions label:focus-within { outline: 3px solid var(--sky); outline-offset: 2px; }
+
 /* her speech bubble opens over the search box (inside the bar), not over the page */
 .buddy-say {
   position: absolute; z-index: 2; right: 60px; top: 50%; max-inline-size: calc(100% - 72px);
