@@ -159,12 +159,12 @@
     if (mood) setBuddy(mood);
     $('#buddySay').textContent = text;
     buddy.classList.add('talk');
-    buddyTimer = setTimeout(() => { buddy.classList.remove('talk'); refreshBuddy(); }, ms || 2600);
+    $('#buddySay').classList.add('show');
+    buddyTimer = setTimeout(() => { buddy.classList.remove('talk'); $('#buddySay').classList.remove('show'); refreshBuddy(); }, ms || 2600);
   }
   /** Pick the resting mood for the current page and decide whether the companion is shown. */
   function refreshBuddy() {
-    // pages that already show a big mascot (home hero, empty states) don't need a second one
-    buddy.hidden = !settings.buddy || !!$('.hero, .empty', view);
+    buddy.hidden = !settings.buddy;
     if (buddy.classList.contains('talk')) return;
     setBuddy(!ready && route.name === 'search' ? 'think' : 'idle');
   }
@@ -545,7 +545,7 @@
     return '<section class="block"><h1>设置</h1>' +
       '<div class="card"><h2>外观</h2><div class="seg three">' + opt('light dark', '跟随系统<small>当前' + sys + '</small>') + opt('light', '浅色') + opt('dark', '深色') + '</div>' +
         sw('petals', '樱花飘落', '背景里的花瓣动画') +
-        sw('buddy', '吉祥物陪伴', '在每个页面右下角显示，点她会说话') + '</div>' +
+        sw('buddy', '吉祥物陪伴', '在每个页面顶部的搜索框旁边，点她会说话') + '</div>' +
       '<div class="card"><h2>释义</h2>' + sw('showEn', '同时显示英文原文', '有中文释义时，在下面保留英文对照') +
         '<div class="row"><span><b>中文释义进度</b><small>中文由 AI 根据英文释义翻译，逐步补全；没有中文的词显示英文</small></span></div>' +
         '<div class="meter"><i style="inline-size:' + Math.max(pct, pct > 0 ? 1 : 0).toFixed(1) + '%"></i></div>' +

@@ -32,6 +32,8 @@ try { document.querySelector('meta[name="color-scheme"]').content = localStorage
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>
       </button>
     </label>
+    <span id="buddySay" class="buddy-say" role="status"></span>
+    <button type="button" id="buddy" class="buddy" aria-label="吉祥物，点一下听她说话" hidden><span id="buddyFace"></span></button>
   </form>
   <div id="loadbar" class="loadbar" role="progressbar" aria-label="词库加载进度" aria-valuemin="0" aria-valuemax="100">
     <i></i><span id="loadtext">正在准备词库…</span>
@@ -56,11 +58,6 @@ try { document.querySelector('meta[name="color-scheme"]').content = localStorage
     <span>设置</span>
   </a>
 </nav>
-
-<button type="button" id="buddy" class="buddy" aria-label="吉祥物，点一下听她说话" hidden>
-  <span id="buddySay" class="buddy-say" role="status"></span>
-  <span id="buddyFace"></span>
-</button>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
