@@ -24,6 +24,12 @@ python3 tools/zh.py merge /tmp/done.json
 git add data/zh && git commit -m "Translate ranks A-B to Chinese" && git push -u origin <分支名>
 ```
 
+只取 JMdict 标为常用的词，加 `--common`（常用词已全部译完，后续直接按排名顺序取即可）：
+
+```bash
+python3 tools/zh.py next --common --n 100 --out /tmp/batch.json
+```
+
 查看进度：
 
 ```bash

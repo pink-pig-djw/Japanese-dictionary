@@ -179,7 +179,9 @@ function matchGloss(q, field) {
       for (let gi = 0; gi < glosses.length; gi++) {
         const raw = glosses[gi].toLowerCase().trim();
         if (!raw.includes(q)) continue;
-        const core = raw.replace(/\s*[（(][^)）]*[)）]/g, '').replace(/^to /, '').trim();
+        let core = raw.replace(/\s*[（(][^)）]*[)）]/g, '').replace(/^to /, '').trim();
+        // "可爱的" should count as an exact hit for "可爱"
+        if (field === '_z' && core.length > 1) core = core.replace(/[的地]$/, '');
         let lv;
         if (core === q || raw === q) lv = 0;
         else if (field === '_z') lv = raw.startsWith(q) ? 1 : 2;
@@ -235,7 +237,10 @@ function search(raw) {
     add('jp', '词条', direct);
     if (!JP.hasKana(q)) {
       const shown = new Set(direct.map((s) => s[1]));
-      add('zh', '中文释义中包含', matchGloss(q, '_z').filter((s) => !shown.has(s[1])));
+      add('zh', '按中文释义', matchGloss(q, '_z').filter((s) => !shown.has(s[1])));
+      // a Chinese word that is not itself a Japanese word: the meaning matches are what the user wants
+      const gz = groups.find((g) => g.key === 'zh');
+      if (gz && !exact.size) { groups.splice(groups.indexOf(gz), 1); groups.unshift(gz); }
     }
   } else {
     const kana = /^[a-z'\- ]+$/.test(q) ? JP.romajiToKana(q) : null;
