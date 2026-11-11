@@ -222,7 +222,12 @@ main {
 .mascot svg, .mascot img { inline-size: 100%; block-size: 100%; stroke: none; object-fit: contain; }
 .mascot-md { inline-size: 128px; animation: bob 3.600s ease-in-out infinite; }
 .mascot-art { filter: drop-shadow(0 6px 10px rgb(190 70 110 / .28)); }
+.mascot-art { position: relative; }
 .mascot-art img { user-select: none; -webkit-user-drag: none; }
+/* live animation canvas (js/live.js): a little larger than the picture so ears and hair can move past its edge */
+.live-canvas { position: absolute; inset: -8.140% auto auto -8.140%; inline-size: 116.280%; block-size: 116.280%; pointer-events: none; }
+.mascot-art img.live-on { visibility: hidden; }
+.mascot-art.mascot-md .live-canvas { -webkit-mask: linear-gradient(#000 72%, transparent 92%); mask: linear-gradient(#000 72%, transparent 92%); }
 .mascot-art.mascot-md { inline-size: 176px; }
 /* a bust shot ends in a straight cut: fade it out instead */
 .mascot-art.mascot-md img { -webkit-mask: linear-gradient(#000 78%, transparent 99%); mask: linear-gradient(#000 78%, transparent 99%); }
@@ -514,6 +519,7 @@ ruby.big rt { font-size: .34em; color: var(--pink-deep); font-weight: 500; lette
 .buddy:has(.mascot-art) { background: linear-gradient(160deg, light-dark(#ffe1ec, #5a3560), light-dark(#ffe9d2, #5a4030)); box-shadow: var(--shadow-sm), inset 0 0 0 2px var(--card-solid); }
 .buddy .mascot-art { inline-size: 58px; translate: 0 -4px; filter: none; }
 .buddy .mascot-art img { clip-path: inset(0 0 0 0 round 0 0 27px 27px); }
+.buddy .mascot-art .live-canvas { clip-path: inset(0 7% 7% 7% round 0 0 27px 27px); }
 .buddy:active .mascot { transform: scale(.9); }
 .buddy.talk .mascot { transform: scale(1.12) rotate(-5deg); }
 /* a picture the user chose in 设置 */

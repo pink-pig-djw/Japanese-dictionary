@@ -1,22 +1,34 @@
 /* The mascot: an orange-haired cat-eared girl.
  *
- * Each mood can have real artwork: run
- *     python3 tools/mascot.py picture.png <mood>
- * which writes assets/mascot/<mood>.webp (whole picture) and <mood>-face.webp
- * (head only, for the small companion in the top bar), then set the mood to
- * true in IMAGES below.  Moods without artwork fall back to the idle picture,
- * and to the simple SVG drawing when there is no artwork at all.
- * Prompts for generating the pictures: docs/MASCOT_PROMPTS.md
+ * Artwork is installed with
+ *     python3 tools/mascot.py picture.png <mood>            (a still picture)
+ *     python3 tools/mascot.py loop.gif <mood>               (an animation)
+ *     python3 tools/mascot.py sheet.png <mood> --frames 8   (a sprite sheet)
+ * which writes assets/mascot/<mood>.webp and <mood>-face.webp and updates
+ * IMAGES below.  'still' pictures are brought to life by js/live.js (breathing,
+ * blinking, ear twitches); 'animated' ones simply play.  Moods without artwork
+ * (false) borrow the idle picture, or the SVG drawing if there is none at all.
+ * Prompts and the full brief for producing the artwork: docs/MASCOT_PROMPTS.md
  */
 (function (root) {
   'use strict';
 
   const IMAGES = {
-    idle: true,    // resting face, used everywhere by default
-    happy: true,   // tapped, word saved
-    think: false,  // searching / dictionary still loading
-    sorry: false,  // nothing found, errors
-    sleep: false,  // empty word book
+    idle: 'still',     // resting face, used everywhere by default
+    happy: 'still',    // tapped, word saved
+    think: false,      // searching / dictionary still loading
+    sorry: false,      // nothing found, errors
+    sleep: false,      // empty word book
+  };
+
+  // The face crop written by tools/mascot.py, as fractions of the full picture: left, top, right, bottom.
+  const FACE_BOX = '0.1,0,0.9,0.8';
+  // Per-mood tweaks for the live animation (js/live.js).  Positions are fractions of the full picture.
+  // e.g. think: { eyes: [0.40, 0.40, 0.62, 0.40] } if the eyes sit elsewhere in that picture.
+  const RIGS = {
+    think: { blink: false },   // head is tilted, so the eyes are not where the idle picture has them
+    sorry: { blink: false },
+    sleep: { blink: false },   // eyes already closed
   };
 
   const EYES = {
@@ -66,8 +78,10 @@
     const cls = 'mascot' + (size ? ' mascot-' + size : '');
     const name = IMAGES[mood] ? mood : IMAGES.idle ? 'idle' : null;
     if (name) {
+      const rig = RIGS[name] ? " data-rig='" + JSON.stringify(RIGS[name]) + "'" : '';
+      const live = IMAGES[name] === 'still' ? ' data-live' : '';   // animated artwork plays by itself
       return '<span class="' + cls + ' mascot-art"><img src="assets/mascot/' + name + (size === 'face' ? '-face' : '') +
-        '.webp" alt="吉祥物" decoding="async" draggable="false"></span>';
+        '.webp" alt="吉祥物" decoding="async" draggable="false"' + live + (size === 'face' ? ' data-box="' + FACE_BOX + '"' : '') + rig + '></span>';
     }
     return '<span class="' + cls + '">' + svg(mood) + '</span>';
   }

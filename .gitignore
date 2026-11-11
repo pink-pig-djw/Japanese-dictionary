@@ -3,3 +3,4 @@ __pycache__/
 data/zh/.lock
 data/zh/*.tmp
 .DS_Store
+mascot-src/

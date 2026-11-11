@@ -28,8 +28,9 @@ python3 -m http.server 8765
 
 ## 吉祥物
 
-吉祥物是一位橙发猫耳少女。目前只有一个表情，其余表情的出图提示词和替换方法见
-[docs/MASCOT_PROMPTS.md](docs/MASCOT_PROMPTS.md)。
+吉祥物是一位橙发猫耳少女，会在首页和每页右上角出现，有 5 个表情。静态图会自动加上呼吸、眨眼等动效，
+也可以换成真正的循环动画。素材的制作要求、全部提示词和安装方法见
+[docs/MASCOT_PROMPTS.md](docs/MASCOT_PROMPTS.md)。右上角的头像也可以在「设置」里换成自己的图片。
 
 ## 重新生成词库
 

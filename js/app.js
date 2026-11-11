@@ -16,7 +16,8 @@
     },
     set(key, value) { try { localStorage.setItem('jd.' + key, JSON.stringify(value)); } catch (e) { /* private mode */ } },
   };
-  const settings = Object.assign({ showEn: true, petals: true, buddy: true }, store.get('settings', {}));
+  const settings = Object.assign({ showEn: true, petals: true, buddy: true, live: true }, store.get('settings', {}));
+  Live.setEnabled(settings.live);
   let favs = store.get('fav', []);          // [{i, t}] newest first
   let history_ = store.get('hist', []);     // recent queries, newest first
   const isFav = (id) => favs.some((f) => f.i === id);
@@ -167,6 +168,7 @@
     const first = !box.firstElementChild;
     if (first) next.classList.add('in');          // nothing to fade from: just show it
     box.append(next);
+    Live.animate(next);
     const img = $('img', next);
     const show = () => {
       if (!next.isConnected) return;
@@ -241,6 +243,7 @@
     view.dataset.page = r.name;
     if (after[r.name]) after[r.name](r);
     refreshBuddy();
+    Live.animate(view);
     if (restoring) { window.scrollTo(0, scrollMemo.get(location.hash) || 0); restoring = false; }
     else if (!keepScroll) window.scrollTo(0, 0);
   }
@@ -573,7 +576,8 @@
     const pct = m.words ? ((m.zhEntries || 0) / m.words * 100) : 0;
     return '<section class="block"><h1>设置</h1>' +
       '<div class="card"><h2>外观</h2><div class="seg three">' + opt('light dark', '跟随系统<small>当前' + sys + '</small>') + opt('light', '浅色') + opt('dark', '深色') + '</div>' +
-        sw('petals', '樱花飘落', '背景里的花瓣动画') + '</div>' +
+        sw('petals', '樱花飘落', '背景里的花瓣动画') +
+        sw('live', '角色动起来', '呼吸、眨眼、抖耳朵；觉得费电或卡顿可以关掉') + '</div>' +
       '<div class="card"><h2>顶栏头像</h2>' +
         sw('buddy', '显示头像', '在每个页面顶部的搜索框旁边，点一下会说话') +
         '<div class="row avatar-row"><span class="avatar-preview">' +
@@ -753,6 +757,7 @@
     store.set('settings', settings);
     if (key === 'petals') petals();
     if (key === 'buddy') refreshBuddy();
+    if (key === 'live') { Live.setEnabled(settings.live); buddyMood = ''; refreshBuddy(); render(true); }
   });
   window.addEventListener('storage', (ev) => {
     if (ev.key === 'color-scheme') document.querySelector('meta[name="color-scheme"]').content = ev.newValue || 'light dark';
