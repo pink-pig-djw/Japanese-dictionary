@@ -15,9 +15,12 @@ let zhInfo = { chunks: [], v: 0 };
 const waiters = [];
 
 // ---------- loading ----------
+// In the Android app the files are already inside the APK: caching them again would double the storage.
+const IN_APP = /[?&]app=1/.test(self.location.search);
+
 async function cachedJson(url, cacheName) {
   let cache = null;
-  try { cache = await caches.open(cacheName); } catch (e) { /* no Cache API (http / private mode) */ }
+  if (!IN_APP) try { cache = await caches.open(cacheName); } catch (e) { /* no Cache API (http / private mode) */ }
   if (cache) {
     const hit = await cache.match(url);
     if (hit) return hit.json();

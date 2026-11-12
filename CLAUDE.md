@@ -16,6 +16,7 @@ python3 -m http.server 8765
 - `js/tags.js` – Chinese labels for JMdict tags. `js/mascot.js` – mascot slot (see `docs/MASCOT_PROMPTS.md`).
 - `data/` – generated dictionary data. `tools/build_data.py` regenerates it (format documented there).
 - `data/zh/` – Chinese glosses, added incrementally with `tools/zh.py`.
+- `android/`, `capacitor.config.json`, `package.json` – Android app (Capacitor wrapper). Build with `npm run apk`, never bare `npx cap sync` (it skips regenerating `www/`). See `docs/ANDROID.md`.
 
 ## Translating glosses to Chinese (the main ongoing task)
 

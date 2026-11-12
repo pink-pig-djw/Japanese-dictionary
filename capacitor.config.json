@@ -1,0 +1,14 @@
+{
+  "appId": "io.github.pinkpigdjw.sakurajisho",
+  "appName": "樱花日语词典",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#ffe4ee"
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "css",
+      "initialViewportFitValueHint": "cover"
+    }
+  }
+}

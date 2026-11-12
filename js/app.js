@@ -24,7 +24,9 @@
   let avatar = store.get('avatar', null);   // custom top-bar picture (data URL), null = the mascot
 
   // ---------- worker ----------
-  const worker = new Worker('js/worker.js');
+  // Running inside the Android app (Capacitor): the dictionary ships inside the APK.
+  const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  const worker = new Worker(NATIVE ? 'js/worker.js?app=1' : 'js/worker.js');
   let rpcId = 0;
   const pending = new Map();
   let meta = null;
@@ -78,6 +80,14 @@
 
   let jaVoice;
   function speak(text) {
+    const tts = NATIVE && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech;
+    if (tts) {
+      // Android WebView has no speechSynthesis: use the phone's own text-to-speech engine
+      tts.stop().catch(() => {});
+      tts.speak({ text, lang: 'ja-JP', rate: 0.9 }).catch(() =>
+        toast('没有找到日语语音：请在手机「设置 → 文字转语音」里安装日语'));
+      return;
+    }
     if (!('speechSynthesis' in window)) { toast('这个浏览器不支持朗读'); return; }
     const synth = window.speechSynthesis;
     if (jaVoice === undefined) jaVoice = synth.getVoices().find((v) => /^ja/i.test(v.lang)) || undefined;
@@ -596,9 +606,9 @@
         '<div class="fact"><span>词条</span><b>' + (m.words || 0).toLocaleString() + '</b></div>' +
         '<div class="fact"><span>常用词</span><b>' + (m.common || 0).toLocaleString() + '</b></div>' +
         '<div class="fact"><span>汉字</span><b>' + (m.kanji || 0).toLocaleString() + '</b></div></div>' +
-        '<p class="hint">词库版本：JMdict ' + esc(m.jmdict || '') + '（' + esc(m.jmdictDate || '') + ' 前后的快照）。首次打开会下载整个词库，之后保存在浏览器里，可离线搜索。</p></div>' +
+        '<p class="hint">词库版本：JMdict ' + esc(m.jmdict || '') + '（' + esc(m.jmdictDate || '') + ' 前后的快照）。' + (NATIVE ? '词库已内置在应用里，无需联网即可查词（笔顺动画需要联网）。' : '首次打开会下载整个词库，之后保存在浏览器里，可离线搜索。') + '</p></div>' +
       '<div class="card"><h2>我的数据</h2>' +
-        '<div class="row"><span><b>生词本</b><small>' + favs.length + ' 个词，只保存在这台设备的浏览器里</small></span><button type="button" class="btn ghost sm" data-act="export">导出</button></div>' +
+        '<div class="row"><span><b>生词本</b><small>' + favs.length + ' 个词，只保存在这台设备上</small></span><button type="button" class="btn ghost sm" data-act="export">' + (NATIVE ? '复制' : '导出') + '</button></div>' +
         '<div class="row"><span><b>搜索记录</b><small>' + history_.length + ' 条</small></span><button type="button" class="btn ghost sm" data-act="clear-hist">清空</button></div></div>' +
       '<div class="card about"><h2>关于</h2>' +
         '<p>词汇数据来自 <a href="https://www.edrdg.org/jmdict/j_jmdict.html" target="_blank" rel="noopener">JMdict</a>，汉字数据来自 <a href="https://www.edrdg.org/wiki/index.php/KANJIDIC_Project" target="_blank" rel="noopener">KANJIDIC2</a>，' +
@@ -715,6 +725,11 @@
     else if (act === 'export') {
       const list = await call('entries', { ids: favs.map((f) => f.i) });
       const text = list.map((e) => [headword(e), e.r[0], e.s.map((s, n) => senseText(e, n).zh || s.g.join('; ')).join(' / ')].join('\t')).join('\n');
+      if (NATIVE) {   // the app's WebView cannot save downloads: copy instead
+        try { await navigator.clipboard.writeText(text); toast('已复制到剪贴板，可粘贴到备忘录或表格'); }
+        catch (e) { toast('复制失败'); }
+        return;
+      }
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([text], { type: 'text/tab-separated-values' }));
       a.download = '生词本.tsv';

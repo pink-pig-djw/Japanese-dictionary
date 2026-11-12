@@ -4,3 +4,8 @@ data/zh/.lock
 data/zh/*.tmp
 .DS_Store
 mascot-src/
+node_modules/
+www/
+android/app/release/
+*.keystore
+keystore.properties
